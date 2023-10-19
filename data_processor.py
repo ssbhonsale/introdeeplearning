@@ -7,6 +7,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MinMaxScaler
 
+from torch.utils.data import DataLoader, Dataset
 def loadData():
     df = pd.read_csv("winequality-red.csv")
     X = df.iloc[:,:11]
@@ -18,8 +19,34 @@ def splitData(X,y,ratio):
     return X_train, X_test, y_train, y_test
 
 
-def Normalize(X_train,X_test):
-    se = StandardScaler()
-    X_train = se.fit_transform(X_train)
-    X_test = se.transform(X_test)
+def Normalize(X_train,X_test,Type=None):
+    match Type:
+        case "standard":
+           se = StandardScaler()
+        case "minmax":
+            se = MinMaxScaler()
+    if Type is not None:
+        X_train = se.fit_transform(X_train)
+        X_test = se.transform(X_test)
     return X_train, X_test
+
+class WineData(Dataset):
+    def __init__(self,X,y):
+        self.x = torch.from_numpy(X).type(torch.float)
+        self.y = torch.from_numpy(y.to_numpy()).type(torch.LongTensor)
+        self.n_sample = self.x.shape[0]
+    
+    def __getitem__(self, index):
+        return self.x[index], self.y[index]
+
+    def __len__(self):
+        return self.n_sample
+    
+
+def generateDataset(ratio,Type=None):
+    X,y = loadData()
+    X_train, X_test, y_train, y_test = splitData(X,y,ratio)
+    X_train, X_test = Normalize(X_train, X_test, Type)
+    trainingData = WineData(X_train,y_train)
+    testData = WineData(X_test,y_test)
+    return trainingData, testData
