@@ -15,7 +15,7 @@ def loadData():
     return X,y
 
 def splitData(X,y,ratio):
-    X_train, X_test, y_train, y_test = train_test_split(X,y,test_size = ratio)
+    X_train, X_test, y_train, y_test = train_test_split(X,y,test_size = ratio,random_state=5)
     return X_train, X_test, y_train, y_test
 
 
@@ -49,8 +49,6 @@ def generateDataset(ratio,Type,droplist):
     X = X.drop(droplist,axis=1)
     X = X.to_numpy()
     X_train, X_test, y_train, y_test = splitData(X,y,ratio)
-    print(type(X_train))
-    print(X.shape)
     X_train, X_test = Normalize(X_train, X_test, Type)
     print
     trainingData = WineData(X_train,y_train)
