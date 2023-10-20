@@ -46,9 +46,13 @@ class WineData(Dataset):
 
 def generateDataset(ratio,Type,droplist):
     X,y = loadData()
-    X.drop(droplist,axis=1)
+    X = X.drop(droplist,axis=1)
+    X = X.to_numpy()
     X_train, X_test, y_train, y_test = splitData(X,y,ratio)
+    print(type(X_train))
+    print(X.shape)
     X_train, X_test = Normalize(X_train, X_test, Type)
+    print
     trainingData = WineData(X_train,y_train)
     testData = WineData(X_test,y_test)
     return trainingData, testData
