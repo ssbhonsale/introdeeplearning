@@ -19,14 +19,20 @@ def accuracy_fn(y_true, y_pred):
     return acc
 
 class NeuralNetModel(nn.Module):
-    def __init__(self,input_dim,output_dim,n_layer,layer_size,activation = "ReLU") -> None:
+    def __init__(self,input_dim,output_dim,n_layer,layer_size,activation) -> None:
         super().__init__()
         self.input_dim = input_dim
         self.output_dim = output_dim
         self.n_layer = n_layer
         self.layer_size = layer_size
         self.activation = activation
-        self.act = nn.LeakyReLU()
+        match self.activation:
+            case "relu":
+                self.act = nn.ReLU()
+            case "sigmoid":
+                self.act = nn.Sigmoid()
+            case "tanh":
+                self.act = nn.Tanh() 
         layers = []
         for i in range(self.n_layer):
             in_size = self.input_dim if i == 0 else self.layer_size

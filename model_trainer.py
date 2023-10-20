@@ -9,10 +9,11 @@ from data_processor import *
 from torch.utils.data import DataLoader, Dataset
 
 def run_training(args):
-    trainingData, testData = generateDataset(args.RATIO,args.NORM_TYPE)
+    trainingData, testData = generateDataset(args.RATIO,args.NORM_TYPE,args.DROP_LIST)
+    print("Data Loaded")
     loadTrainingData = DataLoader(dataset=trainingData,batch_size=args.BATCH_SIZE, shuffle=True)
     loadTestData = DataLoader(dataset=testData,batch_size=testData.n_sample, shuffle=False)
-    neural_net = NeuralNetModel(11,10,args.N_LAYER,args.LAYER_SIZE)
+    neural_net = NeuralNetModel(testData.n_features,10,args.N_LAYER,args.LAYER_SIZE,args.ACT)
     loss_func = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(params=neural_net.parameters(),lr=args.LR)
     loss_ep = []

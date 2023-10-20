@@ -15,7 +15,7 @@ def loadData():
     return X,y
 
 def splitData(X,y,ratio):
-    X_train, X_test, y_train, y_test = train_test_split(X,y,test_size = ratio,random_state=5)
+    X_train, X_test, y_train, y_test = train_test_split(X,y,test_size = ratio)
     return X_train, X_test, y_train, y_test
 
 
@@ -35,7 +35,8 @@ class WineData(Dataset):
         self.x = torch.from_numpy(X).type(torch.float)
         self.y = torch.from_numpy(y.to_numpy()).type(torch.LongTensor)
         self.n_sample = self.x.shape[0]
-    
+        self.n_features = self.x.shape[1]
+        
     def __getitem__(self, index):
         return self.x[index], self.y[index]
 
@@ -43,8 +44,9 @@ class WineData(Dataset):
         return self.n_sample
     
 
-def generateDataset(ratio,Type=None):
+def generateDataset(ratio,Type,droplist):
     X,y = loadData()
+    X.drop(droplist,axis=1)
     X_train, X_test, y_train, y_test = splitData(X,y,ratio)
     X_train, X_test = Normalize(X_train, X_test, Type)
     trainingData = WineData(X_train,y_train)
